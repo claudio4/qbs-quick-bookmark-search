@@ -1,3 +1,5 @@
+![QBS icon](public/qbk-128.png)
+
 # QBS — Quick Bookmark Search
 
 A lightweight Chrome extension for searching and opening bookmarks entirely from the keyboard.
