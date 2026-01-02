@@ -1,0 +1,159 @@
+:root {
+    --bg-color: light-dark(#fefbfd, #1b1b1d);
+    --selected-color: light-dark(#e3e0e2, #333335);
+    --hover-bg: light-dark(#e3e0e2, #333335);
+    --text-primary: light-dark(#202022, #e4dedd);
+    --text-secondary: light-dark(#474648, #e4dedd);
+    --separator-color: light-dark(#d6e3ff, #4f525a);
+    --favicon-bg: light-dark(#f0edee, #262627);
+}
+
+body {
+    margin: 0;
+    width: 360px;
+    background-color: var(--bg-color);
+    font-family: system-ui, "Segoe UI", Roboto, sans-serif;
+    font-size: 13px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    max-height: 600px;
+}
+
+header {
+    display: flex;
+    align-items: center;
+    padding: 14px 16px;
+    background-color: var(--bg-color);
+    border-bottom: 1px solid var(--separator-color);
+    flex-shrink: 0;
+
+    svg {
+        fill: var(--text-secondary);
+        display: block;
+    }
+
+    input {
+        flex-grow: 1;
+        background: transparent;
+        border: none;
+        outline: none;
+        color: var(--text-primary);
+        font-size: 15px;
+        font-family: inherit;
+        margin: 0 12px;
+
+        &::placeholder {
+            color: var(--text-secondary);
+        }
+    }
+
+    #shortcut-hint {
+        color: var(--text-secondary);
+        font-size: 12px;
+        pointer-events: none;
+    }
+
+    input:not(:placeholder-shown) + #shortcut-hint {
+        display: none;
+    }
+}
+
+main {
+    overflow-y: auto;
+    flex-grow: 1;
+    padding-bottom: 8px;
+
+    &::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-color: #5f6368;
+        border-radius: 4px;
+        border: 2px solid var(--bg-color);
+    }
+}
+
+#results-list {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+
+    li {
+        display: flex;
+        align-items: center;
+        padding: 0 16px;
+        height: 48px;
+        cursor: default;
+
+        &:hover,
+        &[aria-selected="true"] {
+            background-color: var(--hover-bg);
+        }
+
+        .icon-wrapper {
+            margin-right: 14px;
+            flex-shrink: 0;
+            height: 40px;
+            width: 40px;
+            background-color: var(--favicon-bg);
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            img {
+                width: 16px;
+                height: 16px;
+            }
+        }
+
+        .content {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            justify-content: center;
+        }
+
+        .title {
+            color: var(--text-primary);
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 2px;
+        }
+
+        .url {
+            color: var(--text-secondary);
+            font-size: 12px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    }
+}
+
+.not-found {
+    justify-content: center;
+    color: var(--text-secondary);
+    font-weight: bold;
+}
+
+.hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}

@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="color-scheme" content="light dark" />
+        <title>QBS</title>
+        <link rel="stylesheet" href="./style.css" />
+    </head>
+    <body>
+        <header>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 -960 960 960">
+                <path
+                    d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"
+                />
+            </svg>
+            <input
+                type="text"
+                id="search-input"
+                placeholder="Search Bookmarks"
+                autocomplete="off"
+                autofocus
+                role="combobox"
+                aria-autocomplete="list"
+                aria-expanded="true"
+                aria-controls="results-list"
+                aria-haspopup="listbox"
+                aria-label="Search Bookmarks"
+                aria-activedescendant="results-list"
+            />
+            <div id="shortcut-hint" aria-hidden="true">Alt+G</div>
+        </header>
+        <main>
+            <div id="a11y-status" class="hidden" aria-live="polite"></div>
+            <ul id="results-list" role="listbox"></ul>
+        </main>
+        <script type="module" src="./popup.ts"></script>
+    </body>
+</html>
