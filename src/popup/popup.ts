@@ -234,45 +234,60 @@ function executeInTabWithExecuteScript(tabId: number, code: string) {
     target: { tabId },
     world: "MAIN",
     func: (scriptCode) => {
-      const script = document.createElement("script");
+      try {
+        const script = document.createElement("script");
 
-      //  CSP BYPASS (Nonce Stealing)
-      const existingScript = document.querySelector("script[nonce]");
-      if (existingScript) {
-        const nonce = existingScript.getAttribute("nonce");
-        if (nonce) {
-          script.setAttribute("nonce", nonce);
-        }
-      }
-
-      //  TRUSTED TYPES BYPASS
-      if (window.trustedTypes && window.trustedTypes.createPolicy) {
-        try {
-          // Try to create a policy to sanitize (or in this case, pass-through) the code
-          // Note: Some sites strictly block policy creation via CSP.
-          // If 'qbs-policy' is blocked, this will throw, and we catch it below.
-          if (!window.QBS_Policy) {
-            window.QBS_Policy = window.trustedTypes.createPolicy("qbs-policy", {
-              createScript: (s: string) => s,
-            });
+        //  CSP BYPASS (Nonce Stealing)
+        const existingScript = document.querySelector("script[nonce]");
+        if (existingScript) {
+          const nonce = existingScript.getAttribute("nonce");
+          if (nonce) {
+            script.setAttribute("nonce", nonce);
           }
+        }
 
-          // Assign using the created policy
-          script.textContent = window.QBS_Policy.createScript(scriptCode) as unknown as string;
-        } catch (e) {
-          // Fallback: If policy creation failed (blocked by CSP),
-          // we try raw assignment, though it will likely fail on the same sites.
-          console.warn("QBS: Trusted Type Policy creation blocked.", e);
+        //  TRUSTED TYPES BYPASS
+        if (window.trustedTypes && window.trustedTypes.createPolicy) {
+          try {
+            // Try to create a policy to sanitize (or in this case, pass-through) the code
+            // Note: Some sites strictly block policy creation via CSP.
+            // If 'qbs-policy' is blocked, this will throw, and we catch it below.
+            if (!window.QBS_Policy) {
+              window.QBS_Policy = window.trustedTypes.createPolicy("qbs-policy", {
+                createScript: (s: string) => s,
+              });
+            }
+
+            // Assign using the created policy
+            script.textContent = window.QBS_Policy.createScript(scriptCode) as unknown as string;
+          } catch (e) {
+            // Fallback: If policy creation failed (blocked by CSP),
+            // we try raw assignment, though it will likely fail on the same sites.
+            console.warn(
+              "QBS: Trusted Type Policy creation blocked. Try enabling the userscript permission on the extension.",
+              e,
+            );
+            script.textContent = scriptCode;
+          }
+        } else {
+          // Standard assignment for sites without Trusted Types
           script.textContent = scriptCode;
         }
-      } else {
-        // Standard assignment for sites without Trusted Types
-        script.textContent = scriptCode;
-      }
 
-      // 4. Inject and Cleanup
-      (document.head || document.documentElement).appendChild(script);
-      script.remove();
+        // 4. Inject and Cleanup
+        (document.head || document.documentElement).appendChild(script);
+        script.remove();
+      } catch (e) {
+        console.error(e);
+      }
+      console.warn(
+        "%c⚠️ QBS: Standard Bookmarklet Execution Mode%c\n\n" +
+          "This bookmarklet is running in standard mode, which may fail on some websites with strict security policies.\n\n" +
+          "For full site compatibility, enable the enhanced mode by granting the 'userscripts' permission.\n\n" +
+          "Learn more: https://github.com/claudio4/qbs-quick-bookmark-search#bookmarklet-execution-modes",
+        "background: #ff6b6b; color: white; font-weight: bold; font-size: 14px; padding: 8px 12px; border-radius: 4px;",
+        "font-size: 12px; padding: 4px;",
+      );
     },
     args: [code],
   });
