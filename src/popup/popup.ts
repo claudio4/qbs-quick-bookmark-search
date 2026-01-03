@@ -1,3 +1,11 @@
+/// <reference types="trusted-types" />
+
+declare global {
+  interface Window {
+    QBS_Policy: any;
+  }
+}
+
 interface SearchResult {
   id: string;
   title: string;
@@ -190,24 +198,73 @@ function handleNavigation(e: KeyboardEvent) {
 }
 
 async function openBookmark(url: string, openInNewTab: boolean) {
-  if (url.startsWith("javascript:")) {
+  const jsPrefix = "javascript:";
+  if (url.startsWith(jsPrefix)) {
+    let code;
+    try {
+      code = decodeURI(url.substring(jsPrefix.length));
+    } catch (err) {
+      code = url.substring(jsPrefix.length);
+    }
+
     const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
     if (!activeTab || !activeTab.id) return;
-    await chrome.scripting.executeScript({
-      target: { tabId: activeTab.id },
-      world: "MAIN",
-      func: (code) => {
-        // This mimics the behavior of clicking a bookmarklet in the bar.
-        window.location.href = code;
-      },
-      args: [url],
-    });
+    await executeInTabWithExecuteScript(activeTab.id, code);
   } else if (openInNewTab) {
     chrome.tabs.create({ url });
   } else {
     chrome.tabs.update({ url });
   }
-  window.close();
+  // window.close();
+}
+
+function executeInTabWithExecuteScript(tabId: number, code: string) {
+  return chrome.scripting.executeScript({
+    target: { tabId },
+    world: "MAIN",
+    func: (scriptCode) => {
+      const script = document.createElement("script");
+
+      //  CSP BYPASS (Nonce Stealing)
+      const existingScript = document.querySelector("script[nonce]");
+      if (existingScript) {
+        const nonce = existingScript.getAttribute("nonce");
+        if (nonce) {
+          script.setAttribute("nonce", nonce);
+        }
+      }
+
+      //  TRUSTED TYPES BYPASS
+      if (window.trustedTypes && window.trustedTypes.createPolicy) {
+        try {
+          // Try to create a policy to sanitize (or in this case, pass-through) the code
+          // Note: Some sites strictly block policy creation via CSP.
+          // If 'qbs-policy' is blocked, this will throw, and we catch it below.
+          if (!window.QBS_Policy) {
+            window.QBS_Policy = window.trustedTypes.createPolicy("qbs-policy", {
+              createScript: (s: string) => s,
+            });
+          }
+
+          // Assign using the created policy
+          script.textContent = window.QBS_Policy.createScript(scriptCode) as unknown as string;
+        } catch (e) {
+          // Fallback: If policy creation failed (blocked by CSP),
+          // we try raw assignment, though it will likely fail on the same sites.
+          console.warn("QBS: Trusted Type Policy creation blocked.", e);
+          script.textContent = scriptCode;
+        }
+      } else {
+        // Standard assignment for sites without Trusted Types
+        script.textContent = scriptCode;
+      }
+
+      // 4. Inject and Cleanup
+      (document.head || document.documentElement).appendChild(script);
+      script.remove();
+    },
+    args: [code],
+  });
 }
 
 async function updateShortcutHint() {
