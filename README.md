@@ -4,44 +4,44 @@
 
 A lightweight Chrome extension for searching and opening bookmarks entirely from the keyboard.
 
-## Key features
+## Features
 
-- **Global keyboard shortcut** to open the popup anytime (`Alt+G` by default; you can change it in Chrome’s extension shortcuts)
-- **Keyboard-centric navigation**
-  - Type to search
-  - Arrow keys or `Ctrl+N` / `Ctrl+P` to move through results
-  - `Enter` to open the selected result
-  - `Home` / `End` to jump to first/last result
-- **Accessibility support**
-  - Selection properly tracked for screenreaders.
-  - Live region status updates for screen reader.
-- **Fast and lightweight**
-  - No UI frameworks
-  - Uses native DOM APIs.
-- **Open source and Tracker free**
-  - Source code is acailable at github.com/claudio4/qbs-quick-bookmark-search.
-  - No trackers nor connections to external services.
+- **Global keyboard shortcut** — Open the popup anytime with `Alt+G` (customizable in Chrome's extension shortcuts)
+- **Keyboard navigation** — Arrow keys or `Ctrl+N`/`Ctrl+P` to navigate, `Enter` to open, `Home`/`End` to jump
+- **Bookmarklet support** — Execute bookmarklets (`javascript:` URLs) directly from search results
+- **Accessibility** — Full screen reader support with live region updates
+- **Fast and lightweight** — No UI frameworks, uses native DOM APIs
+- **Privacy focused** — No trackers or external connections
 
-### Changing the shortcut
-Go to:
-`chrome://extensions/shortcuts`
-and set a custom shortcut for **QBS**.
+### Customizing the keyboard shortcut
 
-## Permissions (and why they’re needed)
+Navigate to `chrome://extensions/shortcuts` and set your preferred shortcut for QBS.
 
-- **`bookmarks`**
-  - Required to read your bookmark tree, list recent bookmarks, and perform bookmark search queries.
+## Permissions
 
-- **`favicon`**
-  - Required to display favicons next to results using Chrome’s internal `/_favicon/` endpoint.
+QBS requires the following permissions:
 
-- **`activeTab`**
-  - Required only when opening **bookmarklets** (`javascript:` URLs). QBS needs access to the currently active tab to run the bookmarklet in the page context (similar to clicking it from the bookmarks bar).
+- **`bookmarks`** — Read your bookmark tree and perform searches
+- **`favicon`** — Display site icons next to results using Chrome's internal favicon API
+- **`activeTab`** — Access the current tab to change its URL and when executing bookmarklets
+- **`scripting`** — Inject bookmarklet code into the active tab
 
-- **`scripting`**
-  - Required to execute bookmarklet code in the active tab via `chrome.scripting.executeScript`. Normal bookmarks are opened by creating a new tab and do not require script injection.
+### Why activeTab and scripting?
+
+When you open a bookmarklet (a bookmark with a `javascript:` URL), QBS must execute that code in the context of your current page, just like clicking it from the bookmarks bar. This requires temporary access to the active tab and the ability to run scripts in it. Regular bookmarks simply open in a new tab without requiring these permissions.
 
 ## Development
 
-- Build:
-  - `npm run build`
+Build the extension:
+
+```
+npm run build
+```
+
+## Source Code
+
+Available at [github.com/claudio4/qbs-quick-bookmark-search](https://github.com/claudio4/qbs-quick-bookmark-search)
+
+## License
+
+See [LICENSE](LICENSE) file for details.

@@ -122,7 +122,7 @@ function renderResults() {
     li.appendChild(iconWrapper);
     li.appendChild(content);
 
-    li.addEventListener("click", () => openBookmark(b.url));
+    li.addEventListener("click", (e) => openBookmark(b.url, e.ctrlKey));
     li.addEventListener("mouseenter", () => {
       setSelected(i);
     });
@@ -178,7 +178,7 @@ function handleNavigation(e: KeyboardEvent) {
       e.preventDefault();
       if (selectedIndex < 0) return;
       const b = bookmarks[selectedIndex];
-      if (b) openBookmark(b.url);
+      if (b) openBookmark(b.url, e.ctrlKey);
       break;
     case "Home":
       setSelected(0);
@@ -189,7 +189,7 @@ function handleNavigation(e: KeyboardEvent) {
   }
 }
 
-async function openBookmark(url: string) {
+async function openBookmark(url: string, openInNewTab: boolean) {
   if (url.startsWith("javascript:")) {
     const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
     if (!activeTab || !activeTab.id) return;
@@ -202,8 +202,10 @@ async function openBookmark(url: string) {
       },
       args: [url],
     });
-  } else {
+  } else if (openInNewTab) {
     chrome.tabs.create({ url });
+  } else {
+    chrome.tabs.update({ url });
   }
   window.close();
 }
