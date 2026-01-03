@@ -209,13 +209,24 @@ async function openBookmark(url: string, openInNewTab: boolean) {
 
     const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
     if (!activeTab || !activeTab.id) return;
-    await executeInTabWithExecuteScript(activeTab.id, code);
+    if (chrome.userScripts) {
+      await executeInTabWithUserScript(activeTab.id, code);
+    } else {
+      await executeInTabWithExecuteScript(activeTab.id, code);
+    }
   } else if (openInNewTab) {
     chrome.tabs.create({ url });
   } else {
     chrome.tabs.update({ url });
   }
-  // window.close();
+  window.close();
+}
+
+async function executeInTabWithUserScript(tabId: number, code: string) {
+  return chrome.userScripts.execute({
+    target: { tabId },
+    js: [{ code }],
+  });
 }
 
 function executeInTabWithExecuteScript(tabId: number, code: string) {

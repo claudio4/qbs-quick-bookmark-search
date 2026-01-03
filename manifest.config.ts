@@ -7,7 +7,7 @@ export default defineManifest({
   short_name: "QBS",
   version: pkg.version,
   description: pkg.description,
-  permissions: ["bookmarks", "favicon", "activeTab", "scripting"],
+  permissions: ["bookmarks", "favicon", "activeTab", "scripting", "userScripts"],
   icons: {
     16: "public/qbk-16.png",
     48: "public/qbk-48.png",
