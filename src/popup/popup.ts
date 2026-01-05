@@ -131,6 +131,11 @@ function renderResults() {
     li.appendChild(content);
 
     li.addEventListener("click", (e) => openBookmark(b.url, e.ctrlKey));
+    li.addEventListener("mousedown", (e) => {
+      if (e.button !== 1) return;
+      e.preventDefault();
+      openBookmark(b.url, true);
+    });
     li.addEventListener("mouseenter", () => {
       setSelected(i);
     });
