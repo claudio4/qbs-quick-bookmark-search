@@ -52,16 +52,29 @@ If the `userScripts` permission is not granted, QBS will automatically fall back
 
 ## Development
 
+Intall dependencies
+```
+npm install
+```
+
 Build the extension:
 
 ```
 npm run build
 ```
 
+Load the extension in Chrome:
+
+1. Open Chrome and navigate to `chrome://extensions`
+2. Enable "Developer mode" using the toggle in the top right corner
+3. Click "Load unpacked"
+4. Select the `dist` folder (not the root repository folder) from your local build
+
+
 ## Source Code
 
-Available at [github.com/claudio4/qbs-quick-bookmark-search](https://github.com/claudio4/qbs-quick-bookmark-search)
+Available at [github.com/claudio4/qbs-quick-bookmark-search](https://github.com/claudio4/qbs-quick-bookmark-search) under MIT license.
 
 ## License
 
-See [LICENSE](LICENSE) file for details.
+This source is freely distributed under the MIT license. Check the [LICENSE](LICENSE) file for details.
