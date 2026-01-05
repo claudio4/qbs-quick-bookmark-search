@@ -1,4 +1,7 @@
-![QBS icon](public/qbk-128.png)
+<p >
+  <a href="https://chromewebstore.google.com/detail/qbs-quick-bookmark-search/dkdnhpalgggigjeoalgfhbnfbpealheg"><img src="public/qbk-128.png" width="128" alt="QBS icon" /></a>
+  <a href="https://chromewebstore.google.com/detail/qbs-quick-bookmark-search/dkdnhpalgggigjeoalgfhbnfbpealheg"><img src="https://developer.chrome.com/static/docs/webstore/branding/image/UV4C4ybeBTsZt43U4xis.png" /></a>
+</a>
 
 # QBS — Quick Bookmark Search
 
