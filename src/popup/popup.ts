@@ -17,6 +17,7 @@ const input = document.getElementById("search-input") as HTMLInputElement;
 const resultsList = document.getElementById("results-list") as HTMLDivElement;
 const a11yStatus = document.getElementById("a11y-status") as HTMLDivElement;
 
+const ITEM_ID_PREFIX = "result-option-";
 let bookmarks: SearchResult[] = [];
 
 updateShortcutHint();
@@ -31,6 +32,37 @@ input.addEventListener("input", () => {
   }
 });
 input.addEventListener("keydown", handleNavigation);
+
+// Event delegation for results list
+resultsList.addEventListener("click", (e) => {
+  const li = (e.target as HTMLElement).closest("li");
+  if (!li || li.classList.contains("not-found")) return;
+
+  const index = getIndexFromElementId(li.id);
+  if (index === -1) return;
+
+  const bookmark = bookmarks[index];
+  if (bookmark) openBookmark(bookmark.url, e.ctrlKey);
+});
+
+resultsList.addEventListener("auxclick", (e) => {
+  if (e.button !== 1) return; // Only handle middle click
+  e.preventDefault();
+
+  const li = (e.target as HTMLElement).closest("li");
+  if (!li || li.classList.contains("not-found")) return;
+
+  const index = getIndexFromElementId(li.id);
+  if (index === -1) return;
+
+  const bookmark = bookmarks[index];
+  if (bookmark) openBookmark(bookmark.url, true);
+});
+
+resultsList.addEventListener("mousedown", (e) => {
+  // stop mouse wheel from entering scroll mode
+  if (e.button === 1) e.preventDefault();
+});
 
 async function loadDefaultView() {
   const tree = await chrome.bookmarks.getTree();
@@ -98,7 +130,7 @@ function renderResults() {
 
   const elements = bookmarks.map((b, i) => {
     const li = document.createElement("li");
-    const itemId = `result-option-${i}`;
+    const itemId = `${ITEM_ID_PREFIX}${i}`;
 
     li.id = itemId;
     li.role = "option";
@@ -130,15 +162,7 @@ function renderResults() {
     li.appendChild(iconWrapper);
     li.appendChild(content);
 
-    li.addEventListener("click", (e) => openBookmark(b.url, e.ctrlKey));
-    li.addEventListener("mousedown", (e) => {
-      if (e.button !== 1) return;
-      e.preventDefault();
-      openBookmark(b.url, true);
-    });
-    li.addEventListener("mouseenter", () => {
-      setSelected(i);
-    });
+    li.addEventListener("mouseenter", handleMouseEnter);
 
     return li;
   }) as Node[];
@@ -150,7 +174,7 @@ function renderResults() {
 let selectedIndex = -1;
 function setSelected(idx: number) {
   if (selectedIndex != -1) {
-    document.getElementById(`result-option-${selectedIndex}`)?.setAttribute("aria-selected", "false");
+    document.getElementById(`${ITEM_ID_PREFIX}${selectedIndex}`)?.setAttribute("aria-selected", "false");
   }
 
   selectedIndex = idx;
@@ -158,7 +182,7 @@ function setSelected(idx: number) {
     return;
   }
 
-  const activeItem = document.getElementById(`result-option-${idx}`);
+  const activeItem = document.getElementById(`${ITEM_ID_PREFIX}${idx}`);
   if (!activeItem) {
     input.removeAttribute("aria-activedescendant");
     return;
@@ -316,6 +340,15 @@ async function updateShortcutHint() {
 
 // --- Helpers ---
 
+function getIndexFromElementId(elementId: string): number {
+  const iStr = elementId.slice(ITEM_ID_PREFIX.length);
+  return iStr.length > 0 ? +iStr : -1;
+}
+
+function handleMouseEnter(e: MouseEvent) {
+  const index = getIndexFromElementId((e.target as HTMLElement).id);
+  if (index !== -1) setSelected(index);
+}
 function handleImgErrorLoad(e: Event | string) {
   if (typeof e === "string") return;
   (e.currentTarget as HTMLElement).style.opacity = "0";
