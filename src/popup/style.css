@@ -90,6 +90,7 @@ main {
         padding: 0 16px;
         height: 48px;
         cursor: default;
+        content-visibility: auto;
 
         &:hover,
         &[aria-selected="true"] {
