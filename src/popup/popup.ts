@@ -231,7 +231,7 @@ async function openBookmark(url: string, openInNewTab: boolean) {
   if (url.startsWith(jsPrefix)) {
     let code;
     try {
-      code = decodeURI(url.substring(jsPrefix.length));
+      code = decodeURIComponent(url.substring(jsPrefix.length));
     } catch (err) {
       code = url.substring(jsPrefix.length);
     }
@@ -364,7 +364,6 @@ function getFaviconUrl(u: string) {
 function cleanUrlDisplay(urlStr: string): string {
   try {
     const u = new URL(urlStr);
-    // Returns "domain.com - /path/..." or just domain
     return u.hostname + (u.pathname !== "/" ? u.pathname : "");
   } catch (e) {
     return urlStr;
